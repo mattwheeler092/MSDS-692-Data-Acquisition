@@ -13,6 +13,7 @@ xml += f"\t<headers>{','.join(headers)}</headers>\n"
 xml += "\t<data>\n"
 for record in data:
     xml += "\t\t<record>\n"
+    headers = [header.replace(" ", "_") for header in headers]
     xml += f"\t\t\t{xml_line(zip(record, headers))}\n"
     xml += "\t\t</record>\n"
 xml += "\t</data>\n</file>"

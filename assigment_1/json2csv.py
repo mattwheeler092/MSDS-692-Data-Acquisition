@@ -16,6 +16,7 @@ data = [list(record.values()) for record in data["data"]]
 csv = add_line(headers)
 for line in data:
     csv += add_line(line)
+csv = csv.strip('\n')
 
 # Return the string to the terminal
 print(csv)

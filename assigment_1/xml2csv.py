@@ -13,13 +13,15 @@ headers = xmldata.file.headers.cdata.split(",")
 data = {header: [] for header in headers}
 for record in xmldata.file.data.record:
     for element in record.children:
-        data[element._name].append(element.cdata)
+        name = element._name.replace("_", " ")
+        data[name].append(element.cdata)
 data = list(map(list, zip(*data.values())))
 
 # Create csv output string
 csv = add_line(headers)
 for line in data:
     csv += add_line(line)
+csv = csv.strip('\n')
 
 # Return the string to the terminal
 print(csv)
