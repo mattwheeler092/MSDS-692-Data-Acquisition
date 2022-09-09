@@ -7,7 +7,7 @@ def filelist(root):
     """Return a fully-qualified list of filenames under root directory"""
     filepaths = []
     for obj in os.listdir(root):
-        obj_path = os.path.join(root, obj)
+        obj_path = os.path.abspath(os.path.join(root, obj))
         if os.path.isfile(obj_path):
             filepaths.append(obj_path)
         elif os.path.isdir(obj_path):
@@ -43,6 +43,87 @@ def words(text):
     return words
 
 
+# def get_search_result_string(file, terms, num_words):
+#     """ Function to get the HTML formated search result string
+#         for a given file and search terms. Returns a specified
+#         number of words. The substring that is choosen contains
+#         the larger number of search terms.
+#     """
+#     # Find the position indicies of the search terms within the text
+#     text_words = get_text(file).lower()
+#     word_pos_dict = {text_words.index(term): term for term in terms}
+#     word_pos_idxs = sorted(word_pos_dict.keys())
+#     # Find the text substring that contains the most search terms
+#     current_idx_group = [word_pos_idxs[0]]
+#     max_idx_group = []
+#     for idx in word_pos_idxs[1:]:
+#         if abs(current_idx_group[0] - idx) < num_words * 4.5:
+#             current_idx_group.append(idx)
+#         elif len(current_idx_group) > len(max_idx_group):
+#             current_idx_group, max_idx_group = [idx], current_idx_group
+#     midpoint_idx = max(max_idx_group, current_idx_group, key=len)[0]
+#     midpoint_term = word_pos_dict[midpoint_idx]
+#     # Contruct HTML search result string
+#     prefix, _, suffix = text_words.partition(midpoint_term)
+#     prefix_words = prefix.replace("\n", " ").split(" ")[-1 * num_words // 2 :]
+#     suffix_words = suffix.replace("\n", " ").split(" ")[: num_words // 2]
+#     search_result_words = prefix_words + [midpoint_term] + suffix_words
+#     search_result_words = [
+#         f"<b>{w}</b>" if w in terms else w for w in search_result_words
+#     ]
+#     return " ".join(search_result_words)
+
+
+def html_format_string(search_result_words, terms):
+    """ Function to convert search result words into HTML. """
+    html_formated_words = []
+    for word in search_result_words:
+        if any(term in word for term in terms):
+            html_formated_words.append(f"<b>{word}</b>")
+        else:
+            html_formated_words.append(word)
+    return " ".join(html_formated_words)
+
+
+def get_search_result_string(file, terms, num_words):
+    """ Function to get the HTML formated search result string
+        for a given file and search terms. Returns a specified
+        number of words. The substring that is choosen contains
+        the larger number of search terms. 
+    """
+    # Find the position indicies of the search terms within the text
+    text_words = get_text(file).lower()
+    word_pos_dict = {text_words.index(term): term for term in terms}
+    word_pos_idxs = sorted(word_pos_dict.keys())
+    # Find the text substring that contains the most search terms
+    current_idx_group = [word_pos_idxs[0]]
+    max_idx_group = []
+    for idx in word_pos_idxs[1:]:
+        if abs(current_idx_group[0] - idx) < num_words * 4.5:
+            current_idx_group.append(idx)
+        elif len(current_idx_group) > len(max_idx_group):
+            current_idx_group, max_idx_group = [idx], current_idx_group
+    midpoint_idx = max(max_idx_group, current_idx_group, key=len)[0]
+    midpoint_term = word_pos_dict[midpoint_idx]
+    # Contruct HTML search result string
+    prefix, _, suffix = text_words.partition(midpoint_term)
+    prefix_words = [w for w in prefix.replace("\n", " ").split(" ") if w != ""]
+    suffix_words = [w for w in prefix.replace("\n", " ").split(" ") if w != ""]
+    search_result_words = (
+        prefix_words[-1 * num_words // 2 :]
+        + [midpoint_term]
+        + suffix_words[: num_words // 2]
+    )
+    return html_format_string(search_result_words, terms)
+
+
+def get_file_HTML(file, terms, num_words=20):
+    """ Function to get formatted HTML string for a valid search file. """
+    html = f'<a href="file://{file}">{file}</a><br>'
+    html += get_search_result_string(file, terms, num_words) + "<br><br>"
+    return html
+
+
 def results(docs, terms):
     """
     Given a list of fully-qualifed filenames, return an HTML file
@@ -50,6 +131,12 @@ def results(docs, terms):
     that have at least one of the search terms.
     Return at most 100 results.  Arg terms is a list of string terms.
     """
+    html = "<html>\n\t<body>\n\t<h2>Search results for <b>"
+    html += f"{' '.join(terms)}</b> in {len(docs)} files </h2>"
+    for doc in docs:
+        html += f"\n\t\t{get_file_HTML(doc, terms, num_words=20)}"
+    html += "\n</body>\n</html>"
+    return html
 
 
 def filenames(docs):
