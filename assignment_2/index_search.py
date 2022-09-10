@@ -1,4 +1,4 @@
-from collections import defaultdict  # https://docs.python.org/2/library/collections.html
+from collections import defaultdict
 
 from words import get_text, words
 
@@ -12,6 +12,11 @@ def create_index(files):
     For each word w in file i, add i to the set of document IDs containing w
     Return a dict object mapping a word to a set of doc IDs.
     """
+    index = defaultdict(set)
+    for idx, file in enumerate(files):
+        for word in words(get_text(file)):
+            index[word].add(idx)
+    return index
 
 
 def index_search(files, index, terms):
@@ -22,3 +27,7 @@ def index_search(files, index, terms):
     You can only use the index to find matching files; you cannot open the files
     and look inside.
     """
+    qualified_files = index[terms[0]]
+    for term in terms[1:]:
+        qualified_files = qualified_files.intersection(index[term])
+    return [file for idx, file in enumerate(files) if idx in qualified_files]
