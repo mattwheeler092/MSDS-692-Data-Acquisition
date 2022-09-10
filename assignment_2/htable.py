@@ -12,8 +12,8 @@ def htable(nbuckets):
 def hashcode(o):
     """
     Return a hashcode for strings and integers; all others return None
-    For integers, just return the integer value. For strings, perform 
-    operation h = h*31 + ord(c) for all characters in the string
+    For integers, just return the integer value.
+    For strings, perform operation h = h*31 + ord(c) for all characters in the string
     """
     if isinstance(o, int):
         return o
@@ -52,11 +52,10 @@ def htable_put(table, key, value):
     bucket_idx = hashcode(key) % len(table)
     for idx, (bucket_key, _) in enumerate(table[bucket_idx]):
         if key == bucket_key:
-            table[bucket_idx][idx] == (key, value)
+            table[bucket_idx][idx] = (key, value)
             break
     else:
         table[bucket_idx].append((key, value))
-    return table
 
 
 def htable_get(table, key):
@@ -66,7 +65,7 @@ def htable_get(table, key):
     association with the key. Return the value (not the key and not
     the association!). Return None if key not found.
     """
-    for i, (k, v) in enumerate(table[hashcode(key) % len(table)]):
+    for k, v in table[hashcode(key) % len(table)]:
         if key == k:
             return v
     return None
@@ -93,8 +92,7 @@ def htable_buckets_str(table):
                 output += f"{key}:{val}"
                 if bucket_idx != len(bucket) - 1:
                     output += ", "
-                elif table_idx != len(table) - 1:
-                    output += "\n"
+            output += "\n"
     return output
 
 
