@@ -43,37 +43,6 @@ def words(text):
     return words
 
 
-# def get_search_result_string(file, terms, num_words):
-#     """ Function to get the HTML formated search result string
-#         for a given file and search terms. Returns a specified
-#         number of words. The substring that is choosen contains
-#         the larger number of search terms.
-#     """
-#     # Find the position indicies of the search terms within the text
-#     text_words = get_text(file).lower()
-#     word_pos_dict = {text_words.index(term): term for term in terms}
-#     word_pos_idxs = sorted(word_pos_dict.keys())
-#     # Find the text substring that contains the most search terms
-#     current_idx_group = [word_pos_idxs[0]]
-#     max_idx_group = []
-#     for idx in word_pos_idxs[1:]:
-#         if abs(current_idx_group[0] - idx) < num_words * 4.5:
-#             current_idx_group.append(idx)
-#         elif len(current_idx_group) > len(max_idx_group):
-#             current_idx_group, max_idx_group = [idx], current_idx_group
-#     midpoint_idx = max(max_idx_group, current_idx_group, key=len)[0]
-#     midpoint_term = word_pos_dict[midpoint_idx]
-#     # Contruct HTML search result string
-#     prefix, _, suffix = text_words.partition(midpoint_term)
-#     prefix_words = prefix.replace("\n", " ").split(" ")[-1 * num_words // 2 :]
-#     suffix_words = suffix.replace("\n", " ").split(" ")[: num_words // 2]
-#     search_result_words = prefix_words + [midpoint_term] + suffix_words
-#     search_result_words = [
-#         f"<b>{w}</b>" if w in terms else w for w in search_result_words
-#     ]
-#     return " ".join(search_result_words)
-
-
 def html_format_string(search_result_words, terms):
     """ Function to convert search result words into HTML. """
     html_formated_words = []
@@ -108,7 +77,7 @@ def get_search_result_string(file, terms, num_words):
     # Contruct HTML search result string
     prefix, _, suffix = text_words.partition(midpoint_term)
     prefix_words = [w for w in prefix.replace("\n", " ").split(" ") if w != ""]
-    suffix_words = [w for w in prefix.replace("\n", " ").split(" ") if w != ""]
+    suffix_words = [w for w in suffix.replace("\n", " ").split(" ") if w != ""]
     search_result_words = (
         prefix_words[-1 * num_words // 2 :]
         + [midpoint_term]
