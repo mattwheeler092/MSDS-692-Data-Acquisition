@@ -18,8 +18,8 @@ def hashcode(o):
     if isinstance(o, int):
         return o
     elif isinstance(o, str):
-        h = ord(o[0])
-        for c in o[1:]:
+        h = 0
+        for c in o:
             h = h * 31 + ord(c)
         return h
     else:
