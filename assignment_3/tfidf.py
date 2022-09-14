@@ -31,9 +31,7 @@ def tokenize(text) -> list:
     text = re.sub("[" + string.punctuation + "0-9\\r\\t\\n]", " ", text)
     tokens = nltk.word_tokenize(text)
     tokens = [w for w in tokens if len(w) > 2]  # ignore a, an, to, at, be, ...
-    stemmer = PorterStemmer()
-    tokens = [stemmer.stem(w) for w in tokens if w not in ENGLISH_STOP_WORDS]
-    return tokens
+    return [w for w in tokens if w not in ENGLISH_STOP_WORDS]
 
 
 def stemwords(words) -> list:
@@ -41,6 +39,8 @@ def stemwords(words) -> list:
     Given a list of tokens/words, return a new list with each word
     stemmed using a PorterStemmer.
     """
+    stemmer = PorterStemmer()
+    return [stemmer.stem(w) for w in words]
 
 
 def tokenizer(text) -> list:
