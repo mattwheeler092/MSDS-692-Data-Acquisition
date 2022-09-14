@@ -1,20 +1,24 @@
+import os
+import string
 import sys
+import xml.etree.cElementTree as ET
+import zipfile
+from collections import Counter
 
 import nltk
 from nltk.stem.porter import *
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-import xml.etree.cElementTree as ET
-from collections import Counter
-import string
-from sklearn.feature_extraction.text import TfidfVectorizer
-import zipfile
-import os
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS, TfidfVectorizer
+
 
 def gettext(xmltext) -> str:
     """
     Parse xmltext and return the text from <title> and <text> tags
     """
-    xmltext = xmltext.encode('ascii', 'ignore') # ensure there are no weird char
+    xmltext = xmltext.encode("ascii", "ignore")  # ensure there are no weird char
+    tree = ET.ElementTree(ET.fromstring(xmltext))
+    title = [elem.text for elem in tree.iterfind("title")]
+    text = [elem.text for elem in tree.iterfind(".//text/*")]
+    return " ".join(title + text)
 
 
 def tokenize(text) -> list:
@@ -24,7 +28,7 @@ def tokenize(text) -> list:
     remove stop words, drop words of length < 3, strip digits.
     """
     text = text.lower()
-    text = re.sub('[' + string.punctuation + '0-9\\r\\t\\n]', ' ', text)
+    text = re.sub("[" + string.punctuation + "0-9\\r\\t\\n]", " ", text)
     tokens = nltk.word_tokenize(text)
     tokens = [w for w in tokens if len(w) > 2]  # ignore a, an, to, at, be, ...
     ...
@@ -41,7 +45,7 @@ def tokenizer(text) -> list:
     return stemwords(tokenize(text))
 
 
-def compute_tfidf(corpus:dict) -> TfidfVectorizer:
+def compute_tfidf(corpus: dict) -> TfidfVectorizer:
     """
     Create and return a TfidfVectorizer object after training it on
     the list of articles pulled from the corpus dictionary. Meaning,
@@ -52,7 +56,7 @@ def compute_tfidf(corpus:dict) -> TfidfVectorizer:
     """
 
 
-def summarize(tfidf:TfidfVectorizer, text:str, n:int):
+def summarize(tfidf: TfidfVectorizer, text: str, n: int):
     """
     Given a trained TfidfVectorizer object and some XML text, return
     up to n (word,score) pairs in a list. Discard any terms with
@@ -60,7 +64,7 @@ def summarize(tfidf:TfidfVectorizer, text:str, n:int):
     """
 
 
-def load_corpus(zipfilename:str) -> dict:
+def load_corpus(zipfilename: str) -> dict:
     """
     Given a zip file containing root directory reuters-vol1-disk1-subset
     and a bunch of *.xml files, read them from the zip file into
