@@ -76,3 +76,14 @@ def load_corpus(zipfilename: str) -> dict:
     as the keys in the dictionary. The values in the dictionary are the
     raw XML text from the various files.
     """
+    corpus = {}
+    with zipfile.ZipFile(zipfilename, "r") as zip:
+        zip.extractall()
+        for filepath in zip.namelist():
+            if filepath.endswith(".xml"):
+                folder, file = filepath.split("/")
+                with open(filepath, "r") as xmlfile:
+                    corpus[file] = xmlfile.read()
+                os.remove(filepath)
+        os.rmdir(folder)
+    return corpus
