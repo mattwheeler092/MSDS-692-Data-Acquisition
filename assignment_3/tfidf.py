@@ -96,12 +96,8 @@ def load_corpus(zipfilename: str) -> dict:
     """
     corpus = {}
     with zipfile.ZipFile(zipfilename, "r") as zip:
-        zip.extractall()
         for filepath in zip.namelist():
             if filepath.endswith(".xml"):
-                folder, file = filepath.split("/")
-                with open(filepath, "r") as xmlfile:
-                    corpus[file] = xmlfile.read()
-                os.remove(filepath)
-        os.rmdir(folder)
+                _, file = filepath.split("/")
+                corpus[file] = zip.read(filepath)
     return corpus
