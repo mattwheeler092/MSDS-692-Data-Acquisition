@@ -56,6 +56,16 @@ def compute_tfidf(corpus: dict) -> TfidfVectorizer:
     the transform() function. The corpus argument is a dictionary
     mapping file name to xml text.
     """
+    tfidf = TfidfVectorizer(
+        input="content",
+        analyzer="word",
+        preprocessor=gettext,
+        tokenizer=tokenizer,
+        stop_words="english",
+        decode_error="ignore",
+    )
+    tfidf.fit(corpus.values())
+    return tfidf
 
 
 def summarize(tfidf: TfidfVectorizer, text: str, n: int):
@@ -64,6 +74,14 @@ def summarize(tfidf: TfidfVectorizer, text: str, n: int):
     up to n (word,score) pairs in a list. Discard any terms with
     scores < 0.09. Sort the (word,score) pairs by TFIDF score in reverse order.
     """
+    results = []
+    scores = tfidf.transform([text])
+    feature_words = tfidf.get_feature_names()
+    _, word_idxs = scores.nonzero()
+    for idx in word_idxs:
+        results.append((feature_words[idx], scores.toarray()[0][idx]))
+    results = sorted(results, key=lambda x: x[1], reverse=True)
+    return [res for res in results if res[1] >= 0.09][:n]
 
 
 def load_corpus(zipfilename: str) -> dict:
