@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Articles</title>
+</head>
+<style type="text/css">
+a:link {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+</style>
+<body>
+
+<h1 style="font-size:130%; font-family:Verdana, sans-serif;">Articles</h1>
+
+{% for a in articles %}
+<p style="font-size:70%; font-family:Verdana, sans-serif;"><a href="/article/{{a[0]}}">{{a[1]}}</a></p>
+{% endfor %}
+
+</body>
+</html>
