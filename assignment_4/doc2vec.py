@@ -435,7 +435,7 @@ def distances(article, articles):
         filename, centroid = article_info[0], article_info[3]
         if filename != target_filename:
             distances_list.append(
-                (np.linalg.norm(centroid - target_centroid), article_info[:-1])
+                (np.linalg.norm(centroid - target_centroid), article_info)
             )
     return distances_list
 
