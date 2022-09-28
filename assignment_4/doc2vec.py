@@ -415,7 +415,7 @@ def load_articles(articles_dirname, gloves):
     """
     article_info = []
     for file in filelist(articles_dirname):
-        if not file.endswith("README.TXT"):
+        if not file.endswith("README.TXT") or not file.endswith(".DS_Store"):
             title, *text = get_text(file).split("\n")
             text = "\n".join(text).strip("\n")
             centroid = doc2vec(text, gloves)
