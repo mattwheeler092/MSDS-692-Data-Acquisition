@@ -347,8 +347,8 @@ def load_glove(filename):
     gloves = {}
     with open(filename) as file:
         for line in file.readlines():
-            elem = line.split()
-            gloves[elem[0]] = np.array([float(val) for val in elem[1:]])
+            word, *vector = line.split()
+            gloves[word] = np.array([float(val) for val in vector])
     return gloves
 
 
@@ -383,8 +383,8 @@ def words(text):
     Lowercase all words
     Remove English stop words
     """
-    regex = "[" + string.punctuation + "0-9\\r\\t\\n]"
-    text = re.sub(regex, " ", text.lower())
+    regex = re.compile("[" + string.punctuation + "0-9\\r\\t\\n]")
+    text = regex.sub(" ", text.lower())
     words = [w for w in text.split() if len(w) > 2]
     return [w for w in words if w not in ENGLISH_STOP_WORDS]
 
