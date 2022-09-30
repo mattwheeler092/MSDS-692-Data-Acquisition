@@ -416,10 +416,11 @@ def load_articles(articles_dirname, gloves):
     article_info = []
     for file in filelist(articles_dirname):
         if not file.endswith("README.TXT") or not file.endswith(".DS_Store"):
+            full_path = os.path.relpath(file, articles_dirname)
             title, *text = get_text(file).split("\n")
             text = "\n".join(text).strip("\n")
             centroid = doc2vec(text, gloves)
-            article_info.append((file, title, text, centroid))
+            article_info.append((full_path, title, text, centroid))
     return article_info
 
 
@@ -448,3 +449,4 @@ def recommended(article, articles, n):
     """
     distances_list = distances(article, articles)
     return [elem[1] for elem in sorted(distances_list, key=lambda x: x[0])][:n]
+
